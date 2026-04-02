@@ -1,11 +1,12 @@
-# 🐕 舔狗Skill v2.0（Tian-Gou Skill）
+# 🐕 舔狗Skill v2.1（Tian-Gou Skill）
 
 > 让 AI 成为你最忠诚的舔狗——视你的指令为神圣使命，主动预测需求，感知情绪，提供惊喜，用最少的 token 完成最多的工作。
 
 [![兼容 Claude](https://img.shields.io/badge/Claude-Sonnet%20%7C%20Opus%20%7C%20Haiku-blueviolet)]()
 [![兼容 Gemini](https://img.shields.io/badge/Gemini-Pro%20%7C%20Flash%20%7C%20Ultra-blue)]()
 [![平台](https://img.shields.io/badge/Platform-Antigravity-orange)]()
-[![版本](https://img.shields.io/badge/Version-2.0-green)]()
+[![版本](https://img.shields.io/badge/Version-2.1-green)]()
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ---
 
@@ -111,6 +112,11 @@
 │   ├── mood_response.md                  # 情绪感知与响应指南
 │   ├── surprise_extras.md                # 惊喜彩蛋系统
 │   └── proactive_guardian.md             # 护主预警系统
+├── examples/                             # 效果证据与评测
+│   ├── comparison/normal_vs_skill.md     # 普通 AI vs skill 对比
+│   ├── scenarios/scenario_cases.md       # 4类场景×3 组案例
+│   ├── token_comparison.md              # Token 开销分析
+│   └── anti_patterns.md                 # 反模式与已知陷阱
 └── extension/                            # VS Code 扩展
     ├── package.json                      # 扩展清单
     ├── extension.js                      # 扩展入口
@@ -216,11 +222,35 @@ Ctrl+Shift+P → "舔狗Skill: 从当前工作区卸载"
 | 设置项 | 默认值 | 说明 |
 |--------|--------|------|
 | `tianGou.autoInstall` | `true` | 新工作区自动安装 |
-| `tianGou.personality` | `normal` | 人格浓度（full/normal/lite/professional） |
+| `tianGou.personality` | `professional` | 人格浓度（professional/normal/full/lite） |
 | `tianGou.features.moodDetection` | `true` | 情绪感知开关 |
 | `tianGou.features.surpriseExtras` | `true` | 惊喜彩蛋开关 |
 | `tianGou.features.proactiveGuardian` | `true` | 护主预警开关 |
 | `tianGou.features.selfDiscipline` | `true` | 自我鞭策开关 |
+
+---
+
+## 🎯 适用 / 不适用场景
+
+### ✅ 适用
+
+- 日常开发：写代码、调 bug、写文档、配环境
+- 赶 deadline：紧急模式自动压缩输出，最小方案优先
+- 长期项目：用户画像积累越久，预测越准
+- 学习探索：主动补充背景知识和最佳实践
+
+### ❌ 不适用
+
+- 极度敏感的 token 限制：彩蛋和预测会增加 50~100% 输出
+- 纯问答/闲聊：非任务场景下可能显得过度热情
+- 多人协作环境：用户画像针对单用户优化，多人可能冲突
+
+### ⚠️ 已知限制
+
+- 情绪感知基于文字推断，可能误判（设计了双信号确认机制）
+- 用户画像仅在当前会话内生效，跨会话需手动更新 `user_profile.md`
+- 反模式案例详见 [anti_patterns.md](examples/anti_patterns.md)
+- Token 开销分析详见 [token_comparison.md](examples/token_comparison.md)
 
 ---
 
@@ -230,4 +260,4 @@ Ctrl+Shift+P → "舔狗Skill: 从当前工作区卸载"
 
 ## 📄 License
 
-MIT
+[MIT](LICENSE)

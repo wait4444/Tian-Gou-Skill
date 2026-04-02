@@ -2,13 +2,17 @@
   "name": "tian-gou-skill",
   "displayName": "🐕 舔狗Skill — 极致忠诚 AI 助手",
   "description": "让 AI 成为你最忠诚的舔狗：使命驱动、情绪感知、惊喜彩蛋、护主预警、极致高效。适用于 Antigravity 的 Claude/Gemini 全系模型。",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "publisher": "wait4444",
   "license": "MIT",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wait4444/-skill.git"
+    "url": "https://github.com/wait4444/Tian-Gou-Skill.git"
+  },
+  "homepage": "https://github.com/wait4444/Tian-Gou-Skill#readme",
+  "bugs": {
+    "url": "https://github.com/wait4444/Tian-Gou-Skill/issues"
   },
   "engines": {
     "vscode": "^1.80.0"
@@ -19,18 +23,22 @@
     "Snippets"
   ],
   "keywords": [
-    "AI",
-    "skill",
-    "antigravity",
-    "claude",
-    "gemini",
-    "assistant",
-    "tian-gou"
+    "AI", "skill", "antigravity", "claude", "gemini",
+    "assistant", "tian-gou", "productivity"
   ],
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "./extension.js",
+  "scripts": {
+    "build": "node scripts/copy-skill.js && vsce package --no-dependencies",
+    "package": "vsce package --no-dependencies",
+    "lint": "eslint extension.js"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.0.0",
+    "eslint": "^9.0.0"
+  },
   "contributes": {
     "commands": [
       {
@@ -43,7 +51,7 @@
       },
       {
         "command": "tianGou.status",
-        "title": "🐕 舔狗Skill: 查看状态"
+        "title": "🐕 舔狗Skill: 查看状态面板"
       },
       {
         "command": "tianGou.editProfile",
@@ -52,6 +60,14 @@
       {
         "command": "tianGou.resetProfile",
         "title": "🐕 舔狗Skill: 重置用户画像"
+      },
+      {
+        "command": "tianGou.previewDiff",
+        "title": "🐕 舔狗Skill: 预览安装 Diff"
+      },
+      {
+        "command": "tianGou.switchPersonality",
+        "title": "🐕 舔狗Skill: 切换人格模式"
       }
     ],
     "configuration": {
@@ -64,15 +80,15 @@
         },
         "tianGou.personality": {
           "type": "string",
-          "default": "normal",
-          "enum": ["full", "normal", "lite", "professional"],
+          "default": "professional",
+          "enum": ["professional", "normal", "full", "lite"],
           "enumDescriptions": [
-            "全力舔狗模式：所有功能全开，emoji 最多",
-            "标准模式：热情但不过度",
-            "轻量模式：减少 emoji 和彩蛋",
-            "专业模式：正式语调，无 emoji，保留预测和预警功能"
+            "👔 专业模式（默认）：正式语调，保留核心功能，无 emoji",
+            "🐕 标准模式：热情但不过度",
+            "🔥 全力舔狗：所有功能全开，emoji 最多",
+            "📎 轻量模式：减少 emoji 和彩蛋"
           ],
-          "description": "舔狗人格浓度"
+          "description": "舔狗人格浓度（首次使用默认为专业模式）"
         },
         "tianGou.features.moodDetection": {
           "type": "boolean",
