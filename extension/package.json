@@ -2,7 +2,7 @@
   "name": "tian-gou-skill",
   "displayName": "🐕 舔狗Skill — 极致忠诚 AI 助手",
   "description": "让 AI 成为你最忠诚的舔狗：使命驱动、情绪感知、惊喜彩蛋、护主预警、极致高效。适用于 Antigravity 的 Claude/Gemini 全系模型。",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "publisher": "wait4444",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -31,7 +31,6 @@
   ],
   "main": "./extension.js",
   "scripts": {
-    "build": "node scripts/copy-skill.js && vsce package --no-dependencies",
     "package": "vsce package --no-dependencies",
     "lint": "eslint extension.js"
   },
@@ -40,14 +39,48 @@
     "eslint": "^9.0.0"
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tianGouPanel",
+          "title": "舔狗Skill",
+          "icon": "assets/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "tianGouPanel": [
+        {
+          "type": "webview",
+          "id": "tianGou.dashboardView",
+          "name": "控制面板"
+        },
+        {
+          "id": "tianGou.featuresView",
+          "name": "功能开关"
+        },
+        {
+          "id": "tianGou.workspacesView",
+          "name": "工作区状态"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "tianGou.workspacesView",
+        "contents": "尚未打开工作区。\n[打开文件夹](command:vscode.openFolder)"
+      }
+    ],
     "commands": [
       {
         "command": "tianGou.install",
-        "title": "🐕 舔狗Skill: 安装到当前工作区"
+        "title": "🐕 舔狗Skill: 安装到当前工作区",
+        "icon": "$(add)"
       },
       {
         "command": "tianGou.uninstall",
-        "title": "🐕 舔狗Skill: 从当前工作区卸载"
+        "title": "🐕 舔狗Skill: 从当前工作区卸载",
+        "icon": "$(trash)"
       },
       {
         "command": "tianGou.status",
@@ -55,7 +88,8 @@
       },
       {
         "command": "tianGou.editProfile",
-        "title": "🐕 舔狗Skill: 编辑用户画像"
+        "title": "🐕 舔狗Skill: 编辑用户画像",
+        "icon": "$(edit)"
       },
       {
         "command": "tianGou.resetProfile",
@@ -67,9 +101,41 @@
       },
       {
         "command": "tianGou.switchPersonality",
-        "title": "🐕 舔狗Skill: 切换人格模式"
+        "title": "🐕 舔狗Skill: 切换人格模式",
+        "icon": "$(symbol-color)"
+      },
+      {
+        "command": "tianGou.refreshViews",
+        "title": "刷新",
+        "icon": "$(refresh)"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "tianGou.refreshViews",
+          "when": "view =~ /tianGou/",
+          "group": "navigation"
+        },
+        {
+          "command": "tianGou.install",
+          "when": "view == tianGou.workspacesView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "tianGou.install",
+          "when": "view == tianGou.workspacesView && viewItem == notInstalled",
+          "group": "inline"
+        },
+        {
+          "command": "tianGou.uninstall",
+          "when": "view == tianGou.workspacesView && viewItem == installed",
+          "group": "inline"
+        }
+      ]
+    },
     "configuration": {
       "title": "舔狗Skill",
       "properties": {

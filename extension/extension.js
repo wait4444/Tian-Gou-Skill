@@ -506,6 +506,136 @@ function updateStatusBar(workspaceRoot) {
 }
 
 // ============================================================
+// Sidebar Views
+// ============================================================
+
+class DashboardViewProvider {
+    constructor(context) {
+        this.context = context;
+    }
+    
+    resolveWebviewView(webviewView) {
+        this._view = webviewView;
+        webviewView.webview.options = { enableScripts: true };
+        this.updateView();
+        
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('tianGou')) {
+                this.updateView();
+            }
+        });
+    }
+
+    updateView() {
+        if (!this._view) return;
+        const config = vscode.workspace.getConfiguration('tianGou');
+        const personality = config.get('personality', 'normal');
+        const personalityLabels = {
+            full: '🔥 全力舔狗',
+            normal: '🐕 标准模式',
+            lite: '📎 轻量模式',
+            professional: '👔 专业模式'
+        };
+
+        this._view.webview.html = `<!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 15px 10px; color: var(--vscode-foreground); background: transparent; }
+                .card { background: var(--vscode-editorWidget-background); border-radius: 6px; padding: 12px; margin: 0 0 15px 0; border: 1px solid var(--vscode-widget-border); text-align: center; }
+                .mode { background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); padding: 4px 12px; border-radius: 12px; font-weight: bold; display: inline-block; margin-bottom: 12px; font-size: 13px; }
+                button { background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
+                button:hover { background: var(--vscode-button-hoverBackground); }
+                .btn-secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
+                .btn-secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div style="font-size: 12px; margin-bottom: 8px; opacity: 0.8;">当前人格模式</div>
+                <div class="mode">${personalityLabels[personality] || personality}</div>
+                <button onclick="post('switchPersonality')">切换人格模式</button>
+            </div>
+            <button class="btn-secondary" onclick="post('editProfile')">📝 编辑用户画像</button>
+            <button class="btn-secondary" onclick="post('status')">📊 查看全屏面板</button>
+            <script>
+                const vscode = acquireVsCodeApi();
+                function post(cmd) { vscode.postMessage({command: cmd}); }
+            </script>
+        </body>
+        </html>`;
+
+        this._view.webview.onDidReceiveMessage(message => {
+            if (message.command === 'switchPersonality') vscode.commands.executeCommand('tianGou.switchPersonality');
+            else if (message.command === 'editProfile') vscode.commands.executeCommand('tianGou.editProfile');
+            else if (message.command === 'status') vscode.commands.executeCommand('tianGou.status');
+        });
+    }
+}
+
+class FeaturesTreeProvider {
+    constructor() {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('tianGou')) this.refresh();
+        });
+    }
+    refresh() { this._onDidChangeTreeData.fire(); }
+    getTreeItem(element) { return element; }
+    getChildren() {
+        const config = vscode.workspace.getConfiguration('tianGou');
+        const features = [
+            { id: 'moodDetection', label: '情绪感知' },
+            { id: 'surpriseExtras', label: '惊喜彩蛋' },
+            { id: 'proactiveGuardian', label: '护主预警' },
+            { id: 'selfDiscipline', label: '自我鞭策' }
+        ];
+        return Promise.resolve(features.map(f => {
+            const on = config.get(`features.${f.id}`, true);
+            const item = new vscode.TreeItem(`${on ? '✅' : '❌'} ${f.label}`, vscode.TreeItemCollapsibleState.None);
+            item.command = {
+                command: 'tianGou.toggleFeature',
+                title: 'Toggle Feature',
+                arguments: [f.id, !on]
+            };
+            item.tooltip = '点击切换状态';
+            return item;
+        }));
+    }
+}
+
+class WorkspacesTreeProvider {
+    constructor() {
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
+    refresh() { this._onDidChangeTreeData.fire(); }
+    getTreeItem(element) { return element; }
+    getChildren() {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) return Promise.resolve([]);
+        return Promise.resolve(workspaceFolders.map(folder => {
+            const skillTarget = getSkillTargetDir(folder.uri.fsPath);
+            const installed = fs.existsSync(skillTarget);
+            const item = new vscode.TreeItem(folder.name, vscode.TreeItemCollapsibleState.None);
+            item.description = installed ? '已安装' : '未安装';
+            item.iconPath = new vscode.ThemeIcon(installed ? 'check' : 'primitive-dot');
+            item.contextValue = installed ? 'installed' : 'notInstalled';
+            return item;
+        }));
+    }
+}
+
+const workspacesProvider = new WorkspacesTreeProvider();
+const featuresProvider = new FeaturesTreeProvider();
+
+async function toggleFeature(featureId, newValue) {
+    const config = vscode.workspace.getConfiguration('tianGou');
+    await config.update(`features.${featureId}`, newValue, vscode.ConfigurationTarget.Global);
+}
+
+// ============================================================
 // 扩展生命周期
 // ============================================================
 
@@ -518,13 +648,23 @@ function activate(context) {
 
     // 注册命令
     context.subscriptions.push(
-        vscode.commands.registerCommand('tianGou.install', () => installSkill(context)),
-        vscode.commands.registerCommand('tianGou.uninstall', () => uninstallSkill()),
+        vscode.commands.registerCommand('tianGou.install', () => { installSkill(context); workspacesProvider.refresh(); }),
+        vscode.commands.registerCommand('tianGou.uninstall', async () => { await uninstallSkill(); workspacesProvider.refresh(); }),
         vscode.commands.registerCommand('tianGou.status', () => showStatus()),
         vscode.commands.registerCommand('tianGou.editProfile', () => editProfile(context)),
         vscode.commands.registerCommand('tianGou.resetProfile', () => resetProfile(context)),
         vscode.commands.registerCommand('tianGou.previewDiff', () => previewDiff(context)),
-        vscode.commands.registerCommand('tianGou.switchPersonality', () => switchPersonality())
+        vscode.commands.registerCommand('tianGou.switchPersonality', () => switchPersonality()),
+        vscode.commands.registerCommand('tianGou.toggleFeature', toggleFeature),
+        vscode.commands.registerCommand('tianGou.refreshViews', () => workspacesProvider.refresh())
+    );
+
+    // 注册 Sidebar Views
+    const dashboardProvider = new DashboardViewProvider(context);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider('tianGou.dashboardView', dashboardProvider),
+        vscode.window.registerTreeDataProvider('tianGou.featuresView', featuresProvider),
+        vscode.window.registerTreeDataProvider('tianGou.workspacesView', workspacesProvider)
     );
 
     // 自动安装
