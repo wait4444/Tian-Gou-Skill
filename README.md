@@ -103,59 +103,75 @@
 ├── install.bat                           # Windows 一键安装器
 ├── install.sh                            # Linux/macOS 一键安装器
 ├── uninstall.bat                         # Windows 卸载器
-└── references/
-    ├── user_profile.md                   # 用户画像模板
-    ├── token_optimization.md             # Token 节省策略
-    ├── model_compatibility.md            # 多模型适配说明
-    ├── antigravity_usage.md              # Antigravity 使用指南
-    ├── mood_response.md                  # 情绪感知与响应指南
-    ├── surprise_extras.md                # 惊喜彩蛋系统
-    └── proactive_guardian.md             # 护主预警系统
+├── references/
+│   ├── user_profile.md                   # 用户画像模板
+│   ├── token_optimization.md             # Token 节省策略
+│   ├── model_compatibility.md            # 多模型适配说明
+│   ├── antigravity_usage.md              # Antigravity 使用指南
+│   ├── mood_response.md                  # 情绪感知与响应指南
+│   ├── surprise_extras.md                # 惊喜彩蛋系统
+│   └── proactive_guardian.md             # 护主预警系统
+└── extension/                            # VS Code 扩展
+    ├── package.json                      # 扩展清单
+    ├── extension.js                      # 扩展入口
+    ├── build.bat                         # 构建脚本
+    ├── tian-gou-skill-2.0.0.vsix         # 预构建扩展包
+    └── skill/                            # 内嵌 skill 副本
 ```
 
 ---
 
 ## 🚀 快速开始
 
-### 1. 克隆仓库
+### 方式一：VS Code 扩展安装（推荐 ⭐）
 
-```bash
-git clone https://github.com/wait4444/-skill.git
-```
+最简单的方式，安装扩展后自动配置，打开任何项目都会自动生效。
 
-### 2. 安装到你的项目（一键跨项目配置）
+1. 克隆仓库
+   ```bash
+   git clone https://github.com/wait4444/-skill.git
+   ```
+2. 在 VS Code 中按 `Ctrl+Shift+P` → 输入 `Install from VSIX`
+3. 选择 `extension/tian-gou-skill-2.0.0.vsix`
+4. 扩展自动激活，打开任何工作区都会部署 skill
+
+安装后：
+- 📊 状态栏显示「🐕 舔狗已就位」
+- 🔧 `Ctrl+Shift+P` 输入「舔狗」可用 5 条命令
+- ⚙️ 设置中搜索「tianGou」可调人格浓度和功能开关
+
+---
+
+### 方式二：脚本安装
 
 ```powershell
-# Windows — 将舔狗skill安装到任意项目
+# Windows — 将舔狗skill安装到指定项目
 .\install.bat D:\你的项目路径
 
 # Linux/macOS
 ./install.sh /path/to/your/project
+
+# 批量安装多个项目
+.\install.bat D:\项目A
+.\install.bat D:\项目B
 ```
 
-安装后，项目中会自动创建：
+安装后，项目中自动创建：
 ```
 你的项目/
 ├── .agents/skills/tian-gou/  →  链接到舔狗skill
-├── src/
 └── ...（你的项目原有文件不受影响）
 ```
 
-> 使用符号链接，skill 源文件更新时**所有项目自动同步**。
+> 符号链接方式安装，更新源文件所有项目**自动同步**。
 
-### 3. 批量安装多个项目
+---
 
-```powershell
-.\install.bat D:\项目A
-.\install.bat D:\项目B
-.\install.bat D:\项目C
-```
-
-### 4. 初始化用户画像（可选）
+### 初始化用户画像（可选）
 
 编辑 `references/user_profile.md`，填入你的偏好，后续 AI 会自动积累。
 
-### 5. 验证激活
+### 验证激活
 
 | 检查项 | 期望行为 |
 |--------|---------|
@@ -166,10 +182,14 @@ git clone https://github.com/wait4444/-skill.git
 | 彩蛋 | 任务后附赠实用小惊喜 |
 | 预警 | 发现风险时主动提醒 |
 
-### 6. 卸载
+### 卸载
 
 ```powershell
+# 脚本方式
 .\uninstall.bat D:\你的项目路径
+
+# 扩展方式
+Ctrl+Shift+P → "舔狗Skill: 从当前工作区卸载"
 ```
 
 > 详细配置说明见 [Antigravity 使用指南](references/antigravity_usage.md)
@@ -178,7 +198,7 @@ git clone https://github.com/wait4444/-skill.git
 
 ## 🎛️ 可调参数
 
-你可以通过对话动态调整舔狗的行为：
+### 对话中调整
 
 | 指令 | 效果 |
 |------|------|
@@ -188,6 +208,19 @@ git clone https://github.com/wait4444/-skill.git
 | "不用提醒风险" | 降低预警频率 |
 | "全力模式" | 一切功能全开 |
 | "简洁模式" | 最小输出，仅核心结果 |
+
+### VS Code 扩展设置
+
+在 VS Code 设置中搜索 `tianGou`：
+
+| 设置项 | 默认值 | 说明 |
+|--------|--------|------|
+| `tianGou.autoInstall` | `true` | 新工作区自动安装 |
+| `tianGou.personality` | `normal` | 人格浓度（full/normal/lite/professional） |
+| `tianGou.features.moodDetection` | `true` | 情绪感知开关 |
+| `tianGou.features.surpriseExtras` | `true` | 惊喜彩蛋开关 |
+| `tianGou.features.proactiveGuardian` | `true` | 护主预警开关 |
+| `tianGou.features.selfDiscipline` | `true` | 自我鞭策开关 |
 
 ---
 
