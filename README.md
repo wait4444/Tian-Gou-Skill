@@ -100,14 +100,17 @@
 -skill/
 ├── SKILL.md                              # 核心指令文件（v2.0 完整行为准则）
 ├── README.md                             # 本文件
+├── install.bat                           # Windows 一键安装器
+├── install.sh                            # Linux/macOS 一键安装器
+├── uninstall.bat                         # Windows 卸载器
 └── references/
     ├── user_profile.md                   # 用户画像模板
     ├── token_optimization.md             # Token 节省策略
     ├── model_compatibility.md            # 多模型适配说明
     ├── antigravity_usage.md              # Antigravity 使用指南
-    ├── mood_response.md            🆕    # 情绪感知与响应指南
-    ├── surprise_extras.md          🆕    # 惊喜彩蛋系统
-    └── proactive_guardian.md       🆕    # 护主预警系统
+    ├── mood_response.md                  # 情绪感知与响应指南
+    ├── surprise_extras.md                # 惊喜彩蛋系统
+    └── proactive_guardian.md             # 护主预警系统
 ```
 
 ---
@@ -120,17 +123,39 @@
 git clone https://github.com/wait4444/-skill.git
 ```
 
-### 2. 在 Antigravity 中配置
+### 2. 安装到你的项目（一键跨项目配置）
 
-1. 打开 Antigravity → **Settings → Workspace**
-2. 将 `-skill` 目录添加为工作区
-3. Antigravity 自动发现 `SKILL.md` 并激活 skill
+```powershell
+# Windows — 将舔狗skill安装到任意项目
+.\install.bat D:\你的项目路径
 
-### 3. 初始化用户画像（可选）
+# Linux/macOS
+./install.sh /path/to/your/project
+```
+
+安装后，项目中会自动创建：
+```
+你的项目/
+├── .agents/skills/tian-gou/  →  链接到舔狗skill
+├── src/
+└── ...（你的项目原有文件不受影响）
+```
+
+> 使用符号链接，skill 源文件更新时**所有项目自动同步**。
+
+### 3. 批量安装多个项目
+
+```powershell
+.\install.bat D:\项目A
+.\install.bat D:\项目B
+.\install.bat D:\项目C
+```
+
+### 4. 初始化用户画像（可选）
 
 编辑 `references/user_profile.md`，填入你的偏好，后续 AI 会自动积累。
 
-### 4. 验证激活
+### 5. 验证激活
 
 | 检查项 | 期望行为 |
 |--------|---------|
@@ -140,6 +165,12 @@ git clone https://github.com/wait4444/-skill.git
 | 情绪适配 | 你焦急时它零废话、你开心时它也活泼 |
 | 彩蛋 | 任务后附赠实用小惊喜 |
 | 预警 | 发现风险时主动提醒 |
+
+### 6. 卸载
+
+```powershell
+.\uninstall.bat D:\你的项目路径
+```
 
 > 详细配置说明见 [Antigravity 使用指南](references/antigravity_usage.md)
 
