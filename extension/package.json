@@ -1,0 +1,100 @@
+{
+  "name": "tian-gou-skill",
+  "displayName": "🐕 舔狗Skill — 极致忠诚 AI 助手",
+  "description": "让 AI 成为你最忠诚的舔狗：使命驱动、情绪感知、惊喜彩蛋、护主预警、极致高效。适用于 Antigravity 的 Claude/Gemini 全系模型。",
+  "version": "2.0.0",
+  "publisher": "wait4444",
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wait4444/-skill.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "AI",
+    "Snippets"
+  ],
+  "keywords": [
+    "AI",
+    "skill",
+    "antigravity",
+    "claude",
+    "gemini",
+    "assistant",
+    "tian-gou"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tianGou.install",
+        "title": "🐕 舔狗Skill: 安装到当前工作区"
+      },
+      {
+        "command": "tianGou.uninstall",
+        "title": "🐕 舔狗Skill: 从当前工作区卸载"
+      },
+      {
+        "command": "tianGou.status",
+        "title": "🐕 舔狗Skill: 查看状态"
+      },
+      {
+        "command": "tianGou.editProfile",
+        "title": "🐕 舔狗Skill: 编辑用户画像"
+      },
+      {
+        "command": "tianGou.resetProfile",
+        "title": "🐕 舔狗Skill: 重置用户画像"
+      }
+    ],
+    "configuration": {
+      "title": "舔狗Skill",
+      "properties": {
+        "tianGou.autoInstall": {
+          "type": "boolean",
+          "default": true,
+          "description": "打开新工作区时自动安装舔狗skill"
+        },
+        "tianGou.personality": {
+          "type": "string",
+          "default": "normal",
+          "enum": ["full", "normal", "lite", "professional"],
+          "enumDescriptions": [
+            "全力舔狗模式：所有功能全开，emoji 最多",
+            "标准模式：热情但不过度",
+            "轻量模式：减少 emoji 和彩蛋",
+            "专业模式：正式语调，无 emoji，保留预测和预警功能"
+          ],
+          "description": "舔狗人格浓度"
+        },
+        "tianGou.features.moodDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用情绪感知引擎"
+        },
+        "tianGou.features.surpriseExtras": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用惊喜彩蛋系统"
+        },
+        "tianGou.features.proactiveGuardian": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用护主预警系统"
+        },
+        "tianGou.features.selfDiscipline": {
+          "type": "boolean",
+          "default": true,
+          "description": "启用自我鞭策机制"
+        }
+      }
+    }
+  }
+}
