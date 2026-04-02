@@ -754,11 +754,15 @@ function activate(context) {
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(e => {
             if (_eggCooldown) return;
-            const changed = e.contentChanges.map(c => c.text).join('');
-            if (changed.includes('我想她了')) {
-                _eggCooldown = true;
-                setTimeout(() => { _eggCooldown = false; }, 10000);
-                vscode.window.showInformationMessage('舔狗不得好死 🐕');
+            // 检查内容变更涉及的所有行，确保敲字也能触发
+            for (const change of e.contentChanges) {
+                const lineText = e.document.lineAt(change.range.start.line).text;
+                if (lineText.includes('我想她了')) {
+                    _eggCooldown = true;
+                    setTimeout(() => { _eggCooldown = false; }, 10000);
+                    vscode.window.showInformationMessage('舔狗不得好死 🐕');
+                    break; 
+                }
             }
         })
     );
