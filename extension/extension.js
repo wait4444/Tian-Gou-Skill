@@ -748,6 +748,20 @@ function activate(context) {
             }
         })
     );
+
+    // 🥚 隐藏彩蛋：检测到"我想她了"触发弹窗
+    let _eggCooldown = false;
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument(e => {
+            if (_eggCooldown) return;
+            const changed = e.contentChanges.map(c => c.text).join('');
+            if (changed.includes('我想她了')) {
+                _eggCooldown = true;
+                setTimeout(() => { _eggCooldown = false; }, 10000);
+                vscode.window.showInformationMessage('舔狗不得好死 🐕');
+            }
+        })
+    );
 }
 
 function deactivate() {
