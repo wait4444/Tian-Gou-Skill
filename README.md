@@ -222,7 +222,7 @@ Ctrl+Shift+P → "舔狗Skill: 从当前工作区卸载"
 | 设置项 | 默认值 | 说明 |
 |--------|--------|------|
 | `tianGou.autoInstall` | `true` | 新工作区自动安装 |
-| `tianGou.personality` | `professional` | 人格浓度（professional/normal/full/lite） |
+| `tianGou.personality` | `normal` | 人格浓度（normal/full/lite/professional） |
 | `tianGou.features.moodDetection` | `true` | 情绪感知开关 |
 | `tianGou.features.surpriseExtras` | `true` | 惊喜彩蛋开关 |
 | `tianGou.features.proactiveGuardian` | `true` | 护主预警开关 |

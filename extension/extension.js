@@ -79,7 +79,7 @@ function getFileManifest(sourceDir, prefix = '') {
  */
 function generateConfigHeader() {
     const config = vscode.workspace.getConfiguration('tianGou');
-    const personality = config.get('personality', 'professional');
+    const personality = config.get('personality', 'normal');
     const moodDetection = config.get('features.moodDetection', true);
     const surpriseExtras = config.get('features.surpriseExtras', true);
     const proactiveGuardian = config.get('features.proactiveGuardian', true);
@@ -289,7 +289,7 @@ async function showStatus() {
     }
 
     const config = vscode.workspace.getConfiguration('tianGou');
-    const personality = config.get('personality', 'professional');
+    const personality = config.get('personality', 'normal');
     const personalityLabels = {
         full: '🔥 全力舔狗',
         normal: '🐕 标准模式',
@@ -396,10 +396,10 @@ async function showStatus() {
 
 async function switchPersonality() {
     const modes = [
-        { label: '👔 专业模式', description: '默认。正式语调，保留预测和预警', value: 'professional' },
-        { label: '🐕 标准模式', description: '热情但不过度，适度 emoji', value: 'normal' },
+        { label: '🐕 标准模式', description: '默认。热情但不过度，适度 emoji', value: 'normal' },
         { label: '🔥 全力舔狗', description: '所有功能全开，emoji 最多', value: 'full' },
-        { label: '📎 轻量模式', description: '减少 emoji 和彩蛋', value: 'lite' }
+        { label: '📎 轻量模式', description: '减少 emoji 和彩蛋', value: 'lite' },
+        { label: '👔 专业模式', description: '正式语调，保留预测和预警', value: 'professional' }
     ];
 
     const selected = await vscode.window.showQuickPick(modes, {

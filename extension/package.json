@@ -80,15 +80,15 @@
         },
         "tianGou.personality": {
           "type": "string",
-          "default": "professional",
-          "enum": ["professional", "normal", "full", "lite"],
+          "default": "normal",
+          "enum": ["normal", "full", "lite", "professional"],
           "enumDescriptions": [
-            "👔 专业模式（默认）：正式语调，保留核心功能，无 emoji",
-            "🐕 标准模式：热情但不过度",
+            "🐕 标准模式（默认）：热情但不过度，适度 emoji",
             "🔥 全力舔狗：所有功能全开，emoji 最多",
-            "📎 轻量模式：减少 emoji 和彩蛋"
+            "📎 轻量模式：减少 emoji 和彩蛋",
+            "👔 专业模式：正式语调，保留核心功能，无 emoji"
           ],
-          "description": "舔狗人格浓度（首次使用默认为专业模式）"
+          "description": "舔狗人格浓度（默认标准模式）"
         },
         "tianGou.features.moodDetection": {
           "type": "boolean",
