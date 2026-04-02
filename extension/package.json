@@ -2,7 +2,7 @@
   "name": "tian-gou-skill",
   "displayName": "🐕 舔狗Skill — 极致忠诚 AI 助手",
   "description": "让 AI 成为你最忠诚的舔狗：使命驱动、情绪感知、惊喜彩蛋、护主预警、极致高效。适用于 Antigravity 的 Claude/Gemini 全系模型。",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "publisher": "wait4444",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -105,6 +105,10 @@
         "icon": "$(symbol-color)"
       },
       {
+        "command": "tianGou.toggleEnable",
+        "title": "🐕 舔狗Skill: 全局开启/关闭"
+      },
+      {
         "command": "tianGou.refreshViews",
         "title": "刷新",
         "icon": "$(refresh)"
@@ -139,6 +143,11 @@
     "configuration": {
       "title": "舔狗Skill",
       "properties": {
+        "tianGou.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "全局开启/关闭舔狗Skill"
+        },
         "tianGou.autoInstall": {
           "type": "boolean",
           "default": true,

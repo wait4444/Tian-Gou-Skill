@@ -111,6 +111,12 @@ function writeConfigToSkillMd(skillTarget) {
 // ============================================================
 
 async function installSkill(context) {
+    const config = vscode.workspace.getConfiguration('tianGou');
+    if (!config.get('enabled', true)) {
+        vscode.window.showWarningMessage('🐕 舔狗Skill 已被全局关闭，请先在面板中开启！');
+        return;
+    }
+
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
         vscode.window.showWarningMessage('🐕 请先打开一个工作区再安装舔狗skill！');
@@ -238,9 +244,15 @@ async function previewDiff(context, targetFolder) {
 // 命令：卸载
 // ============================================================
 
-async function uninstallSkill() {
+async function uninstallSkill(silentAll = false) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) return;
+
+    if (silentAll) {
+        workspaceFolders.forEach(f => removeDirSync(getSkillTargetDir(f.uri.fsPath)));
+        updateStatusBar(workspaceFolders[0].uri.fsPath);
+        return;
+    }
 
     let targetFolder;
     if (workspaceFolders.length === 1) {
@@ -548,9 +560,21 @@ class DashboardViewProvider {
                 button:hover { background: var(--vscode-button-hoverBackground); }
                 .btn-secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
                 .btn-secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
+                .switch { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--vscode-editor-background); border-radius: 6px; margin-bottom: 15px; border: 1px solid var(--vscode-widget-border); }
+                .switch-btn { padding: 4px 12px; border-radius: 12px; font-size: 11px; cursor: pointer; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; }
+                .switch-btn.off { background: #f85149; color: white; }
+                .switch-btn.on { background: #2ea043; color: white; }
             </style>
         </head>
         <body>
+            <div class="switch">
+                <span style="font-weight: bold;">主开关</span>
+                <button class="switch-btn ${config.get('enabled', true) ? 'on' : 'off'}" style="width: auto; margin:0;" onclick="post('toggleEnable')">
+                    ${config.get('enabled', true) ? '✅ 开启中' : '❌ 已关闭'}
+                </button>
+            </div>
+            
+            ${config.get('enabled', true) ? `
             <div class="card">
                 <div style="font-size: 12px; margin-bottom: 8px; opacity: 0.8;">当前人格模式</div>
                 <div class="mode">${personalityLabels[personality] || personality}</div>
@@ -558,6 +582,8 @@ class DashboardViewProvider {
             </div>
             <button class="btn-secondary" onclick="post('editProfile')">📝 编辑用户画像</button>
             <button class="btn-secondary" onclick="post('status')">📊 查看全屏面板</button>
+            ` : `<div style="text-align:center; padding: 20px; opacity: 0.7;">🐕 Skill 已全局关闭，点击开关重新唤醒。</div>`}
+            
             <script>
                 const vscode = acquireVsCodeApi();
                 function post(cmd) { vscode.postMessage({command: cmd}); }
@@ -569,6 +595,7 @@ class DashboardViewProvider {
             if (message.command === 'switchPersonality') vscode.commands.executeCommand('tianGou.switchPersonality');
             else if (message.command === 'editProfile') vscode.commands.executeCommand('tianGou.editProfile');
             else if (message.command === 'status') vscode.commands.executeCommand('tianGou.status');
+            else if (message.command === 'toggleEnable') vscode.commands.executeCommand('tianGou.toggleEnable');
         });
     }
 }
@@ -656,7 +683,26 @@ function activate(context) {
         vscode.commands.registerCommand('tianGou.previewDiff', () => previewDiff(context)),
         vscode.commands.registerCommand('tianGou.switchPersonality', () => switchPersonality()),
         vscode.commands.registerCommand('tianGou.toggleFeature', toggleFeature),
-        vscode.commands.registerCommand('tianGou.refreshViews', () => workspacesProvider.refresh())
+        vscode.commands.registerCommand('tianGou.refreshViews', () => workspacesProvider.refresh()),
+        vscode.commands.registerCommand('tianGou.toggleEnable', async () => {
+            const config = vscode.workspace.getConfiguration('tianGou');
+            const current = config.get('enabled', true);
+            await config.update('enabled', !current, vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage(`🐕 舔狗Skill 已全局${!current ? '开启' : '关闭'}`);
+            if (current) {
+                // If it was ON, we turn it OFF. We should uninstall from all active workspaces implicitly to stop it from working.
+                await uninstallSkill(true); // pass true to uninstall silently
+            } else {
+                // If turning it ON, re-install if autoInstall is true
+                if (config.get('autoInstall', true)) {
+                    vscode.workspace.workspaceFolders?.forEach(f => {
+                        const tgt = getSkillTargetDir(f.uri.fsPath);
+                        if (!fs.existsSync(tgt)) copyDirSync(getSkillSourceDir(context), tgt);
+                    });
+                }
+            }
+            workspacesProvider.refresh();
+        })
     );
 
     // 注册 Sidebar Views
@@ -669,7 +715,7 @@ function activate(context) {
 
     // 自动安装
     const config = vscode.workspace.getConfiguration('tianGou');
-    if (config.get('autoInstall', true)) {
+    if (config.get('enabled', true) && config.get('autoInstall', true)) {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (workspaceFolders) {
             for (const folder of workspaceFolders) {
